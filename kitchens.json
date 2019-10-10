@@ -1,0 +1,227 @@
+[{
+		"type": "individual",
+		"roomNumber": "A201",
+		"roomOrder": "8",
+		"roomId": "95"
+	},{
+		"type": "individual",
+		"roomNumber": "A202",
+		"roomOrder": "9",
+		"roomId": "96"
+	},{
+		"type": "individual",
+		"roomNumber": "A203",
+		"roomOrder": "10",
+		"roomId": "97"
+	},{
+		"type": "individual",
+		"roomNumber": "A301",
+		"roomOrder": "17",
+		"roomId": "107"
+	},{
+		"type": "individual",
+		"roomNumber": "A302",
+		"roomOrder": "18",
+		"roomId": "108"
+	},{
+		"type": "individual",
+		"roomNumber": "A303",
+		"roomOrder": "19",
+		"roomId": "109"
+	},{
+		"type": "individual",
+		"roomNumber": "A401",
+		"roomOrder": "27",
+		"roomId": "116"
+	},{
+		"type": "individual",
+		"roomNumber": "A402",
+		"roomOrder": "28",
+		"roomId": "117"
+	},{
+		"type": "individual",
+		"roomNumber": "A403",
+		"roomOrder": "29",
+		"roomId": "118"
+	},{
+		"type": "individual",
+		"roomNumber": "A501",
+		"roomOrder": "37",
+		"roomId": "125"
+	},{
+		"type": "individual",
+		"roomNumber": "A502",
+		"roomOrder": "38",
+		"roomId": "126"
+	},{
+		"type": "group",
+		"roomNumber": "A101",
+		"roomOrder": "1",
+		"roomId": "87"
+	},{
+		"type": "group",
+		"roomNumber": "A102",
+		"roomOrder": "2",
+		"roomId": "91"
+	},{
+		"type": "group",
+		"roomNumber": "A103",
+		"roomOrder": "3",
+		"roomId": "92"
+	},{
+		"type": "group",
+		"roomNumber": "A104",
+		"roomOrder": "4",
+		"roomId": "93"
+	},{
+		"type": "group",
+		"roomNumber": "A105",
+		"roomOrder": "5",
+		"roomId": "90"
+	},{
+		"type": "group",
+		"roomNumber": "A106",
+		"roomOrder": "6",
+		"roomId": "94"
+	},{
+		"type": "group",
+		"roomNumber": "A204",
+		"roomOrder": "11",
+		"roomId": "98"
+	},{
+		"type": "group",
+		"roomNumber": "A205",
+		"roomOrder": "12",
+		"roomId": "100"
+	},{
+		"type": "group",
+		"roomNumber": "A206",
+		"roomOrder": "13",
+		"roomId": "101"
+	},{
+		"type": "group",
+		"roomNumber": "A207",
+		"roomOrder": "14",
+		"roomId": "102"
+	},{
+		"type": "group",
+		"roomNumber": "A208",
+		"roomOrder": "15",
+		"roomId": "103"
+	},{
+		"type": "group",
+		"roomNumber": "A304",
+		"roomOrder": "20",
+		"roomId": "110"
+	},{
+		"type": "group",
+		"roomNumber": "A305",
+		"roomOrder": "21",
+		"roomId": "111"
+	},{
+		"type": "group",
+		"roomNumber": "A306",
+		"roomOrder": "22",
+		"roomId": "112"
+	},{
+		"type": "group",
+		"roomNumber": "A307",
+		"roomOrder": "23",
+		"roomId": "113"
+	},{
+		"type": "group",
+		"roomNumber": "A308",
+		"roomOrder": "24",
+		"roomId": "114"
+	},{
+		"type": "group",
+		"roomNumber": "A310",
+		"roomOrder": "26",
+		"roomId": "134"
+	},{
+		"type": "group",
+		"roomNumber": "A404",
+		"roomOrder": "30",
+		"roomId": "119"
+	},{
+		"type": "group",
+		"roomNumber": "A405",
+		"roomOrder": "31",
+		"roomId": "120"
+	},{
+		"type": "group",
+		"roomNumber": "A406",
+		"roomOrder": "32",
+		"roomId": "121"
+	},{
+		"type": "group",
+		"roomNumber": "A407",
+		"roomOrder": "33",
+		"roomId": "122"
+	},{
+		"type": "group",
+		"roomNumber": "A408",
+		"roomOrder": "34",
+		"roomId": "123"
+	},{
+		"type": "group",
+		"roomNumber": "A410",
+		"roomOrder": "36",
+		"roomId": "124"
+	},{
+		"type": "group",
+		"roomNumber": "A503",
+		"roomOrder": "39",
+		"roomId": "127"
+	},{
+		"type": "group",
+		"roomNumber": "A504",
+		"roomOrder": "40",
+		"roomId": "128"
+	},{
+		"type": "group",
+		"roomNumber": "A505",
+		"roomOrder": "41",
+		"roomId": "129"
+	},{
+		"type": "group",
+		"roomNumber": "A506",
+		"roomOrder": "42",
+		"roomId": "130"
+	},{
+		"type": "group",
+		"roomNumber": "A507",
+		"roomOrder": "43",
+		"roomId": "137"
+	},{
+		"type": "group",
+		"roomNumber": "A509",
+		"roomOrder": "45",
+		"roomId": "135"
+	},{
+		"type": "multimedia",
+		"roomNumber": "A107",
+		"roomOrder": "7",
+		"roomId": "88"
+	},{
+		"type": "multimedia",
+		"roomNumber": "A209",
+		"roomOrder": "16",
+		"roomId": "89"
+	},{
+		"type": "multimedia",
+		"roomNumber": "A309",
+		"roomOrder": "25",
+		"roomId": "99"
+	},{
+		"type": "multimedia",
+		"roomNumber": "A409",
+		"roomOrder": "35",
+		"roomId": "133"
+	},{
+		"type": "multimedia",
+		"roomNumber": "A508",
+		"roomOrder": "44",
+		"roomId": "136"
+	}
+]
