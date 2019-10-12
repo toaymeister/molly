@@ -187,20 +187,25 @@ def getAllBookingInfoDetailed():
 
 def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, endDay = None, endTime = None):
     cookies = getFreshCookie()
-    if ((users == Node) or (roomId == None) or (beginDay == None) or (beginTime == None) or (endDay == None) or (endTime == None)):
+    if ((users == None) or (roomId == None) or (beginDay == None) or (beginTime == None) or (endDay == None) or (endTime == None)):
         print "lacking parameters, function bookRoom exited :("
         return False
     else:
         bookRoomUrl = socketUrl + "trainingroominfor/save"
-        parameters = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"", "email":"", "userpho":"0", "usemovepho":"1", "users":users}
-        parameters = json.dumps(parameters)
-        #sparameters = parameters.decode('utf-8')
+        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"", "email":"", "userpho":"0", "usemovepho":"1", "users":users}
+        body = json.dumps(body)
         headers = {"content-type": "application/json; charset=UTF-8"}
-        bookRoomResponse = requests.post(bookRoomUrl, headers = headers, params = parameters, cookies = cookies)
+        bookRoomResponse = requests.post(bookRoomUrl, headers = headers, data = body, cookies = cookies)
         bookRoomResult = bookRoomResponse
-        print bookRoomResult
         bookRoomResultList = bookRoomResult.json()
         bookRoomResultText = json.dumps(bookRoomResultList, ensure_ascii = False)
+        expectedStateIncludes = '预约成功'
+        expectedStateIncludes = expectedStateIncludes.decode('utf8')
+        returnedState = bookRoomResultList['state']
+        if expectedStateIncludes in returnedState:
+            return True
+        else:
+            errorMessage = returnedState
         return bookRoomResultText
 
 # function: renew the current room using the cookie got when initialized
@@ -218,7 +223,7 @@ def renewRoom():
     if (returnedState == expectState):
         return True
     else:
-        errorMessage = renewRoomResultList['state']
+        errorMessage = returnedState
         return errorMessage
 
 # function: cancel a specific room using the cookie got when initialized
@@ -235,14 +240,14 @@ def cancelRoom(bookId = None):
         cancelRoomResult = cancelRoomResponse
         cancelRoomResultList = cancelRoomResult.json()
         cancelRoomResultJsonText = json.dumps(cancelRoomResultList, ensure_ascii = False)
-        expectMessage = '取消成功'
+        expectMessage = '删除成功'
         expectMessage = expectMessage.decode('utf8')
         returnedMessage = cancelRoomResultList['msg']
 
         if (returnedMessage == expectMessage):
             return True
         else:
-            errorMessage = cancelRoomResultList['msg']
+            errorMessage = returnedMessage
             return errorMessage
 
 # function: get my own booking information using the cookie got when initialized
