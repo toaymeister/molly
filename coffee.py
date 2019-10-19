@@ -13,3 +13,31 @@
 
 ## Required essential packages/libraries:
 ##  - sys, datetime, time, socket, request, json, bs4/BeautifulSoup, terminaltables/AsciiTable
+
+# import essential packages/libraries
+
+import sys, socket, requests, json
+from bs4 import BeautifulSoup
+import dinner as D
+
+# basic configurations are gathered here
+
+recipeFileName = "recipe.json"
+refreshRecipeCycle = 600#second(s)
+
+# function: reload recipe from file
+
+def getFreshRecipe(): 
+    global dishes
+    # import pre-booking configurations
+
+    recipeFromFile = open(recipeFileName)
+    dishes = json.load(recipeFromFile)
+
+# get current date time
+
+currentDateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+currentDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+currentTime = time.strftime('%H:%M:%S',time.localtime(time.time()))
+currentTimestamp = int(time.time())
+

@@ -2,12 +2,11 @@
 
 **This is one of the projects by Twikor. For more, take a step to my blog [Twikor's (twic.me)](https://twic.me).** 
 
-**Molly** is an open source library for python helping handling with the booking process of CDUT Library's study.
+**Molly** is an open source package for python helping handling with the booking process of CDUT Library's study.
 
 ## Usage
 
 **dinner.py** - main library file that contains all the methods that you need to handle the boring works.
-**coffee.py** - main application file that is executable to stand by your side whenever you are in need of it.
 **kitchens.json** - file containing all the information of the  studies in CDUT library.
 
 Create a filed named **credits.json** besides dinner.py with your login credentials in the following format:
@@ -20,6 +19,8 @@ Create a filed named **credits.json** besides dinner.py with your login credenti
 ```
 
 Once the script is imported, it automatically detects the connection to the server. The script will exit automatically if the check fails.
+
+Below is a list of all available methods, help yourself.
 
 ### getRoomIdByNumber(roomId)
 
@@ -53,6 +54,8 @@ Return `True` if successful, or error message if failed.
 
 Refresh the cookie and make the query, then return the booking information of the current user.
 Set parameter `prettified` to `True` to use terminal-tables which makes it easier to check the information returnded.
+
+**coffee.py** - main application file that is executable to stand by your side whenever you are in need of it.
 
 ## Contributions guide
 

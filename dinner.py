@@ -20,35 +20,88 @@ import sys, socket, requests, json
 from bs4 import BeautifulSoup
 from terminaltables import AsciiTable
 
-# basic configurations are gathered here
+# function: make preparations, in case the configuration files are updated
 
-roomListFileName = 'kitchens.json'
-loginCreditsFileName = 'credits.json'
+def warmPot(ignoreConnectionFault = False):
+    global loginCredits, rooms, kitchens, idToNumber, numberToId, socketUrl
 
-socketIp = "202.115.142.139"
-socketPort = 81
-socketUrl = "http://202.115.142.139:81/"
+    # basic configurations are gathered here
 
-# firstly, try connecting to server, exit the script if failed
+    roomListFileName = 'kitchens.json'
+    loginCreditsFileName = 'credits.json'
 
-connection = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-connection.settimeout(2)
-connectionResult = connection.connect_ex((socketIp,socketPort))
+    socketIp = "202.115.142.139"
+    socketPort = 81
+    socketUrl = "http://202.115.142.139:81/"
 
-if connectionResult != 0:
-    print "remote server could not be connected, script exited :("
-    connection.close()
-    sys.exit(0)
+    # firstly, try connecting to server, exit the script if failed
 
-# import login credits
+    connection = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    connection.settimeout(2)
+    connectionResult = connection.connect_ex((socketIp,socketPort))
 
-creditsFromFile = open(loginCreditsFileName)
-loginCredits = json.load(creditsFromFile)
+    if connectionResult != 0:
+        if (ignoreConnectionFault == False):
+            print "remote server could not be connected, script exited :("
+            connection.close()
+            sys.exit(0)
+        else:
+            print "remote server could not be connected :("
+            connection.close()
 
-# import room information
+    # import login credits
 
-roomListFromFile = open(roomListFileName)
-rooms = json.load(roomListFromFile)
+    creditsFromFile = open(loginCreditsFileName)
+    loginCredits = json.load(creditsFromFile)
+
+    # import room information
+
+    roomListFromFile = open(roomListFileName)
+    rooms = json.load(roomListFromFile)
+
+    # sort all kitchens by types
+
+    kitchens = {
+        'individual':[],
+        'group':[],
+        'multimedia':[]
+    }
+
+    for room in rooms:
+        if (room['type'] == 'individual'):
+            kitchens['individual'].append(room['roomId'])
+        elif (room['type'] == 'group'):
+            kitchens['group'].append(room['roomId'])
+        else:
+            kitchens['multimedia'].append(room['roomId'])
+
+    # pair id-number for kitchens
+
+    idToNumber = {}
+
+    for room in rooms:
+        idToNumber[room['roomId']] = room['roomNumber']
+
+    # pair number-id for kitchens
+
+    numberToId = {}
+
+    for room in rooms:
+        numberToId[room['roomNumber']] = room['roomId']
+
+    return True
+
+warmPot()
+
+# function: get room number by id
+
+def getRoomNumberById(roomId):
+    return idToNumber[roomId]
+
+# function: get room id by number
+
+def getRoomIdByNumber(roomNumber):
+    return numberToId[roomNumber]
 
 # function: login to get the cookie
 
@@ -61,46 +114,6 @@ def getFreshCookie():
     cookies = loginResponse.cookies
 
     return cookies
-
-# sort all kitchens by types
-
-kitchens = {
-    'individual':[],
-    'group':[],
-    'multimedia':[]
-}
-
-for room in rooms:
-    if (room['type'] == 'individual'):
-        kitchens['individual'].append(room['roomId'])
-    elif (room['type'] == 'group'):
-        kitchens['group'].append(room['roomId'])
-    else:
-        kitchens['multimedia'].append(room['roomId'])
-
-# pair id-number for kitchens
-
-idToNumber = {}
-
-for room in rooms:
-    idToNumber[room['roomId']] = room['roomNumber']
-
-# pair number-id for kitchens
-
-numberToId = {}
-
-for room in rooms:
-    numberToId[room['roomNumber']] = room['roomId']
-
-# function: get room number by id
-
-def getRoomNumberById(roomId):
-    return idToNumber[roomId]
-
-# function: get room id by number
-
-def getRoomIdByNumber(roomNumber):
-    return numberToId[roomNumber]
 
 # function: get reader's info by its code
 
@@ -130,7 +143,7 @@ def getUserInfoByCode(code = None, pretiffied = False):
             tableData = [['User Code', 'User Name', 'User Unit', 'User Type']]
             for userRegistry in userRegistries:
                 tableData.append([userRegistry['userCode'], userRegistry['userName'], userRegistry['userUnit'], userRegistry['userType']])
-            tableTitle = ' Detailed user information for <' + userRegistries[0]['userCode'] + '> '
+            tableTitle = ' Detailed user information for <' + code + '> '
 
             generateTable = AsciiTable(tableData, tableTitle)
             return generateTable.table
@@ -283,7 +296,7 @@ def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, end
             user = str(user)
             userList.append({"usercode":user})
         bookRoomUrl = socketUrl + "trainingroominfor/save"
-        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"", "email":"", "userpho":"0", "usemovepho":"1", "users":users}
+        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"", "email":"", "userpho":"0", "usemovepho":"1", "users":userList}
         body = json.dumps(body)
         headers = {"content-type": "application/json; charset=UTF-8"}
         bookRoomResponse = requests.post(bookRoomUrl, headers = headers, data = body, cookies = cookies)
