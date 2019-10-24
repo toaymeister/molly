@@ -25,11 +25,13 @@ sys.setdefaultencoding('utf8')
 
 # basic configurations are gathered here
 
-standbyMode = False
+debugMode = True#set true to display run time log
+
 recipeFileName = "recipe.json"
-refreshRecipeCycle = 20#time(s)
-retryTimes = 2
+refreshRecipeCycle = 50#time(s)
+retryTimes = 5
 retryInterval = 1
+standbyInterval = 1
 
 # load recipe from file to task queue
 
@@ -51,7 +53,7 @@ def getHotCoffees():
                 toImportTask['attemptedTimes'] = 0
                 coffees.append(toImportTask)
 
-        os.system('mv recipe.json ./history/' + str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))) + '.json')
+        os.system('mv recipe.json history/' + str(time.strftime('%Y-%m-%d+%H:%M:%S',time.localtime(time.time()))) + '.json')
         return coffees
     else:
         return False
@@ -62,6 +64,12 @@ currentDateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 currentDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 currentTime = time.strftime('%H:%M:%S',time.localtime(time.time()))
 currentTimestamp = int(time.time())
+
+# function: output status when in standby mode
+
+def sweetOut(outputContent):
+    if (debugMode == True):
+        print outputContent
 
 # function: storing of the booking status data
 
@@ -81,7 +89,9 @@ def collectCoffeeGrounds(coffeeGrounds):
 # start the main loop
 
 sleepCounter = 0
+sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing tasks from file")
 coffees = getHotCoffees()
+sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing operation finished successfully")
 
 while(True):
 
@@ -107,47 +117,39 @@ while(True):
             # do cycle-based routines
 
             if (int(time.time()) - int(time.mktime(expectedTimeArray)) < 0):#timeComparison = currentTimestamp - expectedTimeStamp
-                if (standbyMode == True):
-                    print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [ " + str(coffeeId) + " ] is currently waiting to be triggered"
+                sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [ " + str(coffeeId) + " ] is currently waiting to be triggered")
             else:
                 if (attemptedTimes <= retryTimes):
                     returnValue = False
                     while (returnValue != True):
                         currentDateTime = time.strftime('%m-%d %H:%M:%S',time.localtime(time.time()))
-                        if (standbyMode == True):
-                            print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying processing task with id [ " + str(coffeeId) + " ] for the [ " + str(attemptedTimes + 1) + " ] time"
+                        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying processing task with id [ " + str(coffeeId) + " ] for the [ " + str(attemptedTimes + 1) + " ] time")
                         returnValue = D.bookRoom(users, roomId, startAtDate, startAtTime, endAtDate, endAtTime)
-                        if (standbyMode == True):
-                            print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying operation completed"
+                        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying operation completed")
                         if (returnValue != True):
-                            if (standbyMode == True):
-                                print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [ " + str(coffeeId) + " ], details: " + returnValue
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [ " + str(coffeeId) + " ], details: " + returnValue)
                             collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [ " + str(coffeeId) + " ], details: " + returnValue.decode('utf8'))
                         else:
-                            if (standbyMode == True):
-                                print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [ " + str(coffeeId) + " ]"
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [ " + str(coffeeId) + " ]")
                             collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [ " + str(coffeeId) + " ]")
                             break
 
                         attemptedTimes = attemptedTimes + 1
                         time.sleep(retryInterval)
                         if (attemptedTimes >= retryTimes):
-                            if (standbyMode == True):
-                                print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [ " + str(coffeeId) + " ] reached limit, skipping"
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [ " + str(coffeeId) + " ] reached limit, skipping")
                             collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [ " + str(coffeeId) + " ] reached limit, task skipped")
                             coffees.pop(coffeeIndex)
                             break
 
-        if (standbyMode == True):
+        if (debugMode == True):
             print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: checking for tasks in queue"
 
-    time.sleep(1)
+    time.sleep(standbyInterval)
     sleepCounter = sleepCounter + 1
 
     if (sleepCounter >= refreshRecipeCycle):
-        if (standbyMode == True):
-            print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing tasks from file"
+        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing tasks from file")
         coffees = getHotCoffees()
-        if (standbyMode == True):
-            print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing operation finished successfully"
+        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: importing operation finished successfully")
         sleepCounter = 0
