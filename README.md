@@ -4,10 +4,20 @@
 
 **Molly** is an open source package for python helping handling with the booking process of CDUT Library's study.
 
+## Installation
+
+First, install al the dependencies that are required for this package.
+```
+pip install terminaltables beautifulsoup4
+```
+Then clone all the files to your computer(mostly a server for continuous support).
+
 ## Usage
 
 **dinner.py** - main library file that contains all the methods that you need to handle the boring works.
 **kitchens.json** - file containing all the information of the  studies in CDUT library.
+
+**cafe.py** - main application file that is executable to stand by your side whenever you are in need of it.
 
 Create a filed named **credits.json** besides dinner.py with your login credentials in the following format:
 
@@ -54,8 +64,6 @@ Return `True` if successful, or error message if failed.
 
 Refresh the cookie and make the query, then return the booking information of the current user.
 Set parameter `prettified` to `True` to use terminal-tables which makes it easier to check the information returnded.
-
-**coffee.py** - main application file that is executable to stand by your side whenever you are in need of it.
 
 ## Contributions guide
 
