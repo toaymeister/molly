@@ -28,7 +28,7 @@ sys.setdefaultencoding('utf8')
 debugMode = True#set true to display runtime log
 
 recipeFileName = "recipe.json"
-refreshRecipeCycle = 11#time(s)
+refreshRecipeCycle = 60#time(s)
 retryTimes = 5
 retryInterval = 1
 standbyInterval = 1
@@ -55,14 +55,15 @@ def getHotCoffees():
                 toImportTask['taskId'] = idHash.hexdigest()
                 toImportTask['attemptedTimes'] = 0
                 coffees.append(toImportTask)
-                leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
 
-                if (os.path.isfile('./leftOver.txt') == False):
-                    os.system('touch leftOver.txt')
+            leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
 
-                leftOverFile = open('leftOver.txt', 'a')
-                leftOverFile.write(leftOverContent)
-                leftOverFile.close()
+            if (os.path.isfile('./leftOver.txt') == False):
+                os.system('touch leftOver.txt')
+
+            leftOverFile = open('leftOver.txt', 'a')
+            leftOverFile.write(leftOverContent)
+            leftOverFile.close()
 
         else:
             for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
@@ -79,17 +80,18 @@ def getHotCoffees():
                 if (toImportTask['taskId'] not in taskIdList):
                     toImportTask['attemptedTimes'] = 0
                     coffees.append(toImportTask)
-                    leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
-
-                    if (os.path.isfile('./leftOver.txt') == False):
-                        os.system('touch leftOver.txt')
-
-                    leftOverFile = open('leftOver.txt', 'a')
-                    leftOverFile.write(leftOverContent)
-                    leftOverFile.close()
-
                 else:
                     sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: dulplicated task id [" + toImportTask['taskId'] + "]")
+
+            leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
+
+            if (os.path.isfile('./leftOver.txt') == False):
+                os.system('touch leftOver.txt')
+
+            leftOverFile = open('leftOver.txt', 'a')
+            leftOverFile.write(leftOverContent)
+            leftOverFile.close()
+
 
         os.system('rm recipe.json')
         return coffees
