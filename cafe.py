@@ -17,7 +17,7 @@
 
 # import essential packages/libraries
 
-import os, sys, datetime, time, json
+import os, sys, datetime, time, json, hashlib
 import dinner as D
 
 reload(sys)
@@ -25,10 +25,10 @@ sys.setdefaultencoding('utf8')
 
 # basic configurations are gathered here
 
-debugMode = True#set true to display run time log
+debugMode = True#set true to display runtime log
 
 recipeFileName = "recipe.json"
-refreshRecipeCycle = 50#time(s)
+refreshRecipeCycle = 11#time(s)
 retryTimes = 5
 retryInterval = 1
 standbyInterval = 1
@@ -47,16 +47,55 @@ def getHotCoffees():
         recipeFromFile = open(recipeFileName)
         toImportTasks = json.load(recipeFromFile)
 
-        for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
-            if (toImportTask['triggerAt'] not in coffees):
-                toImportTask['taskId'] = toImportTaskIndex
+        if (coffees == []):
+            for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
+                #toImportTask['taskIndex'] = toImportTaskIndex
+                idHashSource = str(str(toImportTask['roomId']) + toImportTask['startAt'] + toImportTask['endAt'] + toImportTask['triggerAt'])
+                idHash = hashlib.md5(idHashSource)
+                toImportTask['taskId'] = idHash.hexdigest()
                 toImportTask['attemptedTimes'] = 0
                 coffees.append(toImportTask)
+                leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
 
-        os.system('mv recipe.json history/' + str(time.strftime('%Y-%m-%d+%H:%M:%S',time.localtime(time.time()))) + '.json')
+                if (os.path.isfile('./leftOver.txt') == False):
+                    os.system('touch leftOver.txt')
+
+                leftOverFile = open('leftOver.txt', 'a')
+                leftOverFile.write(leftOverContent)
+                leftOverFile.close()
+
+        else:
+            for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
+                coffeesInQueue = len(coffees)
+                #toImportTask['taskIndex'] = coffeesInQueue
+                idHashSource = str(str(toImportTask['roomId']) + toImportTask['startAt'] + toImportTask['endAt'] + toImportTask['triggerAt'])
+                idHash = hashlib.md5(idHashSource)
+                toImportTask['taskId'] = idHash.hexdigest()
+
+                taskIdList = []
+                for coffee in coffees:
+                    taskIdList.append(coffee['taskId'])
+
+                if (toImportTask['taskId'] not in taskIdList):
+                    toImportTask['attemptedTimes'] = 0
+                    coffees.append(toImportTask)
+                    leftOverContent = "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + json.dumps(coffees, ensure_ascii = False) + "\n"
+
+                    if (os.path.isfile('./leftOver.txt') == False):
+                        os.system('touch leftOver.txt')
+
+                    leftOverFile = open('leftOver.txt', 'a')
+                    leftOverFile.write(leftOverContent)
+                    leftOverFile.close()
+
+                else:
+                    sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: dulplicated task id [" + toImportTask['taskId'] + "]")
+
+        os.system('rm recipe.json')
         return coffees
+        
     else:
-        return False
+        return coffees
 
 # get current date time
 
@@ -95,7 +134,7 @@ sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())
 
 while(True):
 
-    if (coffees != False):
+    if (coffees != []):
 
         for coffeeIndex, coffee in enumerate(coffees):
             coffeeId = coffee['taskId']
@@ -117,33 +156,38 @@ while(True):
             # do cycle-based routines
 
             if (int(time.time()) - int(time.mktime(expectedTimeArray)) < 0):#timeComparison = currentTimestamp - expectedTimeStamp
-                sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [ " + str(coffeeId) + " ] is currently waiting to be triggered")
+                sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [" + str(coffeeId) + "] is currently waiting to be triggered")
             else:
+
+                if (attemptedTimes == 0):
+                    sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [" + str(coffeeId) + "] is started successfully")
+                    collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: task with id [" + str(coffeeId) + "] is started successfully")
+
                 if (attemptedTimes <= retryTimes):
                     returnValue = False
                     while (returnValue != True):
                         currentDateTime = time.strftime('%m-%d %H:%M:%S',time.localtime(time.time()))
-                        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying processing task with id [ " + str(coffeeId) + " ] for the [ " + str(attemptedTimes + 1) + " ] time")
+                        sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying processing task with id [" + str(coffeeId) + "] for the [" + str(attemptedTimes + 1) + "] time")
                         returnValue = D.bookRoom(users, roomId, startAtDate, startAtTime, endAtDate, endAtTime)
                         sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: trying operation completed")
                         if (returnValue != True):
-                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [ " + str(coffeeId) + " ], details: " + returnValue)
-                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [ " + str(coffeeId) + " ], details: " + returnValue.decode('utf8'))
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [" + str(coffeeId) + "], details: " + returnValue)
+                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] ERROR: unable to process task with id [" + str(coffeeId) + "], details: " + returnValue.decode('utf8'))
                         else:
-                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [ " + str(coffeeId) + " ]")
-                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [ " + str(coffeeId) + " ]")
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [" + str(coffeeId) + "]")
+                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: successfully processed task with id [" + str(coffeeId) + "]")
+                            coffees.pop(coffeeIndex)
                             break
 
                         attemptedTimes = attemptedTimes + 1
                         time.sleep(retryInterval)
                         if (attemptedTimes >= retryTimes):
-                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [ " + str(coffeeId) + " ] reached limit, skipping")
-                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [ " + str(coffeeId) + " ] reached limit, task skipped")
+                            sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [" + str(coffeeId) + "] reached limit, skipping")
+                            collectCoffeeGrounds("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] WARNING: trying operation for task with id [" + str(coffeeId) + "] reached limit, task skipped")
                             coffees.pop(coffeeIndex)
                             break
 
-        if (debugMode == True):
-            print "[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: checking for tasks in queue"
+    sweetOut("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] INFO: checking for tasks in queue")
 
     time.sleep(standbyInterval)
     sleepCounter = sleepCounter + 1
