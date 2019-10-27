@@ -12,12 +12,22 @@ pip install terminaltables beautifulsoup4
 ```
 Then clone all the files to your computer(mostly a server for continuous support).
 
-## Usage
+## Structure
 
 **dinner.py** - main library file that contains all the methods that you need to handle the boring works.
-**kitchens.json** - file containing all the information of the  studies in CDUT library.
 
 **cafe.py** - main application file that is executable to stand by your side whenever you are in need of it.
+
+**kitchens.json** - file containing all the information of the  studies in CDUT library.
+
+**credits.json** - file containing login information
+
+**recipe.json** - the configuration file for automatic study-booking application *cafe.py*
+
+**leftOver.txt** - file recording all the operation
+
+## Usage
+
 
 Create a filed named **credits.json** besides dinner.py with your login credentials in the following format:
 
