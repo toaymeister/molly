@@ -79,10 +79,7 @@ def getHotCoffees():
             sweetOut(sweet)
             coffeeGrounds = "ERROR: task-importing operation failed for invalid recipe file, operation canceled"
             collectCoffeeGrounds(coffeeGrounds)
-            operationCanceled = True
-
-        if (operationCanceled == False):
-
+        else:
             if (coffees == []):
                 for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
                     #toImportTask['taskIndex'] = toImportTaskIndex
@@ -125,9 +122,6 @@ def getHotCoffees():
             sweetOut(sweet)
             coffeeGrounds = "INFO: task imported successfully"
             collectCoffeeGrounds(coffeeGrounds)
-            return coffees
-        
-        else:
             return coffees
 
     else:
