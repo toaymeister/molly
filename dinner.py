@@ -26,7 +26,7 @@ standbyMode = True#set this to true if you whould like to init the library yours
 
 # function: make preparations, in case the configuration files are updated
 
-def warmPot(ignoreConnectionFault = False):
+def init(ignoreConnectionFault = False):
     global loginCredits, rooms, kitchens, idToNumber, numberToId, socketUrl
 
     # basic configurations are gathered here
@@ -54,7 +54,7 @@ def warmPot(ignoreConnectionFault = False):
                 print "remote server could not be connected :("
 
             connection.close()
-            excepted = "Except_RemoteServerUnreachable"
+            excepted = "Exception_RemoteServerUnreachable"
             return excepted
     else:
         # import login credits
@@ -66,7 +66,19 @@ def warmPot(ignoreConnectionFault = False):
             try:
                 loginCredits = json.load(creditsFromFile)
             except ValueError:
-                print "wrong login credits file format, script exited :("
+                if (standbyMode != True):
+                    print "wrong login credits file format, script exited :("
+                    sys.exit(0)
+                else:
+                    excepted = 'Exception_InvalidRoomInfoFile'
+                    return excepted
+            except KeyboardInterrupt:
+                if (standbyMode != True):
+                    print "action canceled"
+                else:
+                    excepted = 'Command_CancelAction'
+                    return excepted
+                
                 sys.exit(0)
             else:
                 # import room information
@@ -79,11 +91,14 @@ def warmPot(ignoreConnectionFault = False):
                         rooms = json.load(roomListFromFile)
                     except ValueError:
                         if (standbyMode != True):
-                            print "invalid room information file format :("
+                            print "invalid login credits file format :("
                             sys.exit(0)
                         else:
-                            excepted = "Except_InvalidRoomInfoFileFormat"
+                            excepted = "Exception_InvalidLoginCreditsFileFormat"
                             return excepted
+                    except KeyboardInterrupt:
+                        excepted = 'Command_CancelAction'
+                        return excepted
                     else:
                         # sort all kitchens by types
 
@@ -122,19 +137,19 @@ def warmPot(ignoreConnectionFault = False):
                         print "invalid room information file :("
                         sys.exit(0)
                     else:
-                        excepted = 'Except_InvalidRoomInfoFile'
+                        excepted = 'Exception_InvalidRoomInfoFile'
                         return excepted
 
         else:
             if (standbyMode != True):
-                print "invalid login credits file format :("
+                print "invalid login credits file :("
                 sys.exit(0)
             else:
-                excepted = 'Except_InvalidLoginCreditsFileFormat'
+                excepted = 'Exception_InvalidLoginCreditsFile'
                 return excepted
 
 if (standbyMode != True):
-    warmPot()
+    init()
 
 # function: get room number by id
 
@@ -157,7 +172,10 @@ def getFreshCookie():
     try:
         loginResponse = requests.post(loginUrl, params = parameter, timeout = 10)
     except requests.exceptions.RequestException:
-        excepted = "Except_ConnectionTimeOut"
+        excepted = "Exception_ConnectionTimeOut"
+        return excepted
+    except KeyboardInterrupt:
+        excepted = 'Command_CancelAction'
         return excepted
     else:
         cookies = loginResponse.cookies
@@ -176,7 +194,10 @@ def getUserInfoByCode(code = None, pretiffied = False):
         try:
             getUserInfoResponse = requests.post(getUserInfoUrl, params = parameters, timeout = 10)
         except requests.exceptions.RequestException:
-            excepted = "Except_ConnectionTimeOut"
+            excepted = "Exception_ConnectionTimeOut"
+            return excepted
+        except KeyboardInterrupt:
+            excepted = 'Command_CancelAction'
             return excepted
         else:
             userInfo = getUserInfoResponse
@@ -253,7 +274,10 @@ def getRoomBookingInfo(roomId = None, prettified = False, detailed = False):
         try:
             getRoomBookingInfoResponse = requests.get(getRoomBookingInfoUrl, params = parameters, cookies = cookies, timeout = 10)
         except requests.exceptions.RequestException:
-            excepted = 'Except_ConnectionTimeOut'
+            excepted = 'Exception_ConnectionTimeOut'
+            return excepted
+        except KeyboardInterrupt:
+            excepted = 'Command_CancelAction'
             return excepted
         else:
             roomBookingInfo = getRoomBookingInfoResponse
@@ -346,7 +370,7 @@ def getAllCurrentBookableRoomsInfo():
         for room in kitchens:
             allBookingInfo.append(getBookingInfo(room['roomId']))
     return allBookingInfo
-    
+
 '''
 
 # function: book a room using the cookie got freshly
@@ -369,7 +393,10 @@ def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, end
         try:
             bookRoomResponse = requests.post(bookRoomUrl, headers = headers, data = body, cookies = cookies, timeout = 10)
         except requests.exceptions.RequestException:
-            excepted = 'Except_ConnectionTimeOut'
+            excepted = 'Exception_ConnectionTimeOut'
+            return excepted
+        except KeyboardInterrupt:
+            excepted = 'Command_CancelAction'
             return excepted
         else:
             bookRoomResult = bookRoomResponse
@@ -393,7 +420,10 @@ def renewRoom():
     try:
         renewRoomResponse = requests.get(renewRoomUrl, cookies = cookies, timeout = 10)
     except requests.exceptions.RequestException:
-        excepted = 'Except_ConnectionTimeOut'
+        excepted = 'Exception_ConnectionTimeOut'
+        return excepted
+    except KeyboardInterrupt:
+        excepted = 'Command_CancelAction'
         return excepted
     else:
         renewRoomResult = renewRoomResponse
@@ -422,7 +452,10 @@ def cancelRoom(bookingId = None):
         try:
             cancelRoomResponse = requests.get(cancelRoomUrl, params = parameters, cookies = cookies, timeout = 10)
         except requests.exceptions.RequestException:
-            excepted = 'Except_ConnectionTimeOut'
+            excepted = 'Exception_ConnectionTimeOut'
+            return excepted
+        except KeyboardInterrupt:
+            excepted = 'Command_CancelAction'
             return excepted
         else:
             cancelRoomResult = cancelRoomResponse
@@ -447,7 +480,10 @@ def getMyBookingInfo(prettified = False):
     try:
         getMyBookingInfoResponse = requests.get(getMyBookingInfoUrl, cookies = cookies, timeout = 10)
     except requests.exceptions.RequestException:
-        excepted = 'Except_ConnectionTimeOut'
+        excepted = 'Exception_ConnectionTimeOut'
+        return excepted
+    except KeyboardInterrupt:
+        excepted = 'Command_CancelAction'
         return excepted
     else:
         myBookingInfo = getMyBookingInfoResponse
@@ -506,7 +542,10 @@ def getMyBookingHistory(prettified = False, getEntriesNumber = 10):
         try:
             getMyBookingHistoryResponse = requests.get(getMyBookingHistoryUrl, params = parameters, cookies = cookies, timeout = 10)
         except requests.exceptions.RequestException:
-            excepted = 'Except_ConnectionTimeOut'
+            excepted = 'Exception_ConnectionTimeOut'
+            break
+        except KeyboardInterrupt:
+            excepted = 'Command_CancelAction'
             break
         else:
             excepted = ''

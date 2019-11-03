@@ -87,10 +87,11 @@ def getHotCoffees():
                     idHash = hashlib.md5(idHashSource)
                     toImportTask['taskId'] = idHash.hexdigest()
                     toImportTask['attemptedTimes'] = 0
-                    coffees.append(toImportTask)
 
-                coffeeGrounds = "INFO: imported task with id [" + toImportTask['taskId'] + "], details: " + json.dumps(coffees, ensure_ascii = False)
-                collectCoffeeGrounds(coffeeGrounds)
+                    coffeeGrounds = "INFO: imported task with id [" + toImportTask['taskId'] + "], details: " + json.dumps(toImportTask, ensure_ascii = False)
+                    collectCoffeeGrounds(coffeeGrounds)
+                    
+                    coffees.append(toImportTask)
 
             else:
                 for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
@@ -183,7 +184,7 @@ while(True):
                         currentDateTime = time.strftime('%m-%d %H:%M:%S',time.localtime(time.time()))
                         sweet = "INFO: trying operation execute-bookRoom for task with id [" + str(coffeeId) + "] for the [" + str(attemptedTimes + 1) + "] time"
                         sweetOut(sweet)
-                        D.warmPot(True)
+                        D.init(True)
                         returnValue = D.bookRoom(users, roomId, startAtDate, startAtTime, endAtDate, endAtTime)
                         sweet = "INFO: operation completed"
                         sweetOut(sweet)
