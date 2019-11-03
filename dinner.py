@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-## An one-file python library for study-booking system of CDUT Library.
+## An intensive python library for study-booking system of CDUT Library.
 ##
 ## This work is under Toay's PRE-MIT license with extra agreement that:
 ##  - to help protecting the server, rate limit must be setted below 1 rps
@@ -45,14 +45,12 @@ def init(ignoreConnectionFault = False):
     connectionResult = connection.connect_ex((socketIp, socketPort))
 
     if connectionResult != 0:
-        if (ignoreConnectionFault == False):
+        if (ignoreConnectionFault == False or standbyMode != True):
             print "remote server could not be connected, script exited :("
             connection.close()
             sys.exit(0)
         else:
-            if (standbyMode != True):
-                print "remote server could not be connected :("
-
+            print "remote server could not be connected, ignoring :("
             connection.close()
             excepted = "Exception_RemoteServerUnreachable"
             return excepted
@@ -223,43 +221,6 @@ def getUserInfoByCode(code = None, pretiffied = False):
                 generateTable = AsciiTable(tableData, tableTitle)
                 return generateTable.table
 
-'''
-
-# function: get the booking info for a specific room
-
-def getRoomBookingInfo(roomId = None, prettified = False):
-    cookies = getFreshCookie()
-    if (roomId == None):
-        print "lacking parameters, function getRoomBookingInfo exited :("
-        return False
-    else:
-        getRoomBookingInfoUrl = socketUrl + "datafeed"
-        parameters = {'method':'list', 'id':roomId}
-        getRoomBookingInfoResponse = requests.get(getRoomBookingInfoUrl, params = parameters)
-        roomBookingInfo = getRoomBookingInfoResponse
-        roomBookingInfoDict = roomBookingInfo.json()
-        roomBookingInfoJsonText = json.dumps(roomBookingInfoDict, ensure_ascii = False)
-        roomBookingInfoDict = json.load(roomBookingInfoDict)
-        roomBookingEvents = roomBookingInfo['events']
-
-        if (prettified == False):
-            roomBookingTimeList = []
-            for roomBookingEvent in roomBookingEvents:
-                roomBookTimeListEntry = {
-                    'start':roomBookingEvent[2],
-                    'end':roomBookingEvent[3]
-                    }
-                roomBookTimeList.append(roomBookTimeListEntry)
-
-            roomBookingTimeListJson = json.dumps(roomBookingTimeList, ensure_ascii = False)
-            return roomBookingTimeListJson
-        else:
-            roomBookingTimeTable = []
-            bookingEvents = roomBookingInfo['events']
-            tableData = [['Start', 'End']]
-
-'''
-
 # function: get the detailed booking information for a specific room
 
 def getRoomBookingInfo(roomId = None, prettified = False, detailed = False):
@@ -355,23 +316,6 @@ def getRoomBookingInfo(roomId = None, prettified = False, detailed = False):
 
                 generateTable = AsciiTable(tableData, tableTitle)
                 return generateTable.table
-
-'''
-
-# function: get the detailed booking info for all rooms
-
-def getAllCurrentBookableRoomsInfo():
-    global kitchens
-    if (type == None):
-        print "lacking parameters, function getAllBookingInfo exited :("
-        return False
-    else:
-        allBookingInfo = []
-        for room in kitchens:
-            allBookingInfo.append(getBookingInfo(room['roomId']))
-    return allBookingInfo
-
-'''
 
 # function: book a room using the cookie got freshly
 

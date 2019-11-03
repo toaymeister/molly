@@ -1,6 +1,6 @@
-# Molly - An intensive python package for study-booking system of CDUT Library
+# Molly - A powerful intensive python package for study-booking system of CDUT Library
 
-**This is one of the projects by Twikor. For more, take a step to my blog [Twikor's (twic.me)](https://twic.me).**
+**This is one of the projects by Twikor. It is not unusual for me to have more on my blog [Twikor's (twic.me)](https://twic.me).**
 
 **Molly** is an open source package for python helping handling with the booking process of CDUT Library's study.
 
@@ -51,6 +51,12 @@ Otherwise, you may need to set `standbyMode` to `True` if you are using it in sc
 #### init()
 
 Initialize the library, including checking connection to the system, loading room information from file and so on.
+
+|Parameter|Type|Default|Example|Detail|
+|-|-|-|-|-|
+|`ignoreConnectionFault`|bool|False|True|wether exit on connection failure|
+
+Notice that if `standbyMode` is set to `True`, the script will not exit just as `ignoreCoonectionFault = True` will do.
 
 |Return value|Type|Detail
 |-|-|-|
@@ -105,6 +111,8 @@ Defaultly return the booking information for a given id of a room in json format
 
 |Parameter|Type|Default|Example|Detail|
 |-|-|-|-|-|
+|`roomId`|int|None|`125`|could be obtained using `getRoomIdByNumber()`|
+|`prettified`|bool|`False`|True|whether to use the data to render a user-friendly table in terminal|
 
 Defaultly return the booking information for a given id of a room in json format. If setting parameter 2 to True, it will use terminaltables to render a prettier user interface right in your browser.
 
@@ -234,4 +242,4 @@ You can make contributions to this project in the following ways.
 
 Thisn project is maintained by twikor at **[Toay laboratory](https://toay.org)**, a place where we enjoy making creative things. We hope the ones who think of themselves useful to a newly-founded non-profit studio for creators, please don't hesitate joining us.
 
-For more information, please have a look at **[this](https://toay.org/about/sigining-up)**.
+For more information, please have a look at **[this](https://toay.org/about/signing-up)**.
