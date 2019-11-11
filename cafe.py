@@ -33,6 +33,12 @@ retryTimes = 5
 retryInterval = 1
 standbyInterval = 1
 
+def bindSuccess(details = None):
+    return True
+
+def bindFailure(details = None):
+    return True
+
 # function: output status when in standby mode
 
 def sweetOut(outputContent):
@@ -198,6 +204,11 @@ while(True):
                             sweetOut(sweet)
                             coffeeGrounds = "INFO: successfully processed operation for task with id [" + str(coffeeId) + "]"
                             collectCoffeeGrounds(coffeeGrounds)
+
+                            successDetailsParsed = {"users":users, "roomId":roomId, "startAt":startAt, "endAt":endAt}
+                            successDetailsText = json.dumps(successDetailsParsed, ensure_ascii = False)
+                            bindSuccess(successDetailsText)
+
                             coffees.pop(coffeeIndex)
                             break
 
@@ -208,6 +219,11 @@ while(True):
                             sweetOut(sweet)
                             coffeeGrounds = "WARNING: trying operation execute-bookRoom for task with id [" + str(coffeeId) + "] reached limit, task skipped"
                             collectCoffeeGrounds(coffeeGrounds)
+
+                            FailureDetailsParsed = {"users":users, "roomId":roomId, "startAt":startAt, "endAt":endAt, "errorMessage":returnValue}
+                            FailureDetailsText = json.dumps(FailureDetailsParsed, ensure_ascii = False)
+                            bindFailure(successDetailsText)
+
                             coffees.pop(coffeeIndex)
                             break
 
