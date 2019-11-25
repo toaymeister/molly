@@ -4,7 +4,7 @@
 
 **Molly** is an open source package for python helping handling with the booking process of CDUT Library's study.
 
-This branch is for python *2.7+*, If you are seeking for further support for python 3.5+, please check out branch *v2.0+*.
+This branch is for python *3.7+*, If you are seeking for previous support for python 2.7+, please check out branch *v1.0+*.
 
 ## Installation
 
@@ -23,7 +23,7 @@ Then clone all the files to your computer(mostly a server for continuous support
 |**kitchens.json**|the file containing all the information of the  studies in CDUT library|
 |**credits.json**|the file containing login information|
 |**recipe.json**|the configuration file for automatic study-booking application *cafe.py*|
-|**coffeeGrounds.txt**|file recording all the essential logs from `cafe.py`|
+|**beans.txt**|file recording all the essential logs from `cafe.py`|
 
 ## Configurations & Usages
 
@@ -224,9 +224,41 @@ The default base configurations like debug mode, retry intervals are listed belo
 |`retryInterval`|int|`1`|\|
 |`standbyInterval`|int|`1`|\|
 
-The **cafe.py** will automatically absorb the configurations in **recipe.json**, put them into job queue and remove the file.
+The **cafe.py** will automatically absorb the configurations in **recipe.json**, put them into job queue directory and remove the original file.
 
-All the process logs could be found in **coffeeGounds.txt** for debugging purposes.
+All the essential process logs could be found in **beans.txt** for debugging purposes.
+
+Giving an example of the format of the pre-configuration file:
+
+```
+[
+    {
+        "roomId":125,
+        "users":[
+            "201906010101"
+        ],
+        "startAt": "2019-11-30 09:40:00",
+        "endAt": "2019-11-30 13:40:00",
+        "triggerAt": "2019-11-24 00:00:30"
+    },{
+        "roomId":125,
+        "users":[
+            "201906010101"
+        ],
+        "startAt": "2019-11-30 13:41:00",
+        "endAt": "2019-11-30 17:41:00",
+        "triggerAt": "2019-11-24 00:00:50"
+    },{
+        "roomId":125,
+        "users":[
+            "201906010101"
+        ],
+        "startAt": "2019-11-30 17:42:00",
+        "endAt": "2019-11-30 21:42:00",
+        "triggerAt": "2019-11-24 00:01:10"
+    }
+]
+```
 
 ## Contributions
 
