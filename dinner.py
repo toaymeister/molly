@@ -40,111 +40,116 @@ def init(ignoreConnectionFault = False):
 
     # firstly, try connecting to server, exit the script if failed
 
-    connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection.settimeout(2)
-    connectionResult = connection.connect_ex((socketIp, socketPort))
-
-    if connectionResult != 0:
-        if (ignoreConnectionFault == False or standbyMode != True):
-            print "remote server could not be connected, script exited :("
-            connection.close()
-            sys.exit(0)
-        else:
-            print "remote server could not be connected, ignoring :("
-            connection.close()
-            excepted = "Exception_RemoteServerUnreachable"
-            return excepted
+    try:
+        connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        connection.settimeout(2)
+        connectionResult = connection.connect_ex((socketIp, socketPort))
+    except KeyboardInterrupt:
+        excepted = 'Command_CancelAction'
+        return excepted
     else:
-        # import login credits
 
-        if (os.path.isfile('./credits.json') == True):
-
-            creditsFromFile = open(loginCreditsFileName)
-
-            try:
-                loginCredits = json.load(creditsFromFile)
-            except ValueError:
-                if (standbyMode != True):
-                    print "wrong login credits file format, script exited :("
-                    sys.exit(0)
-                else:
-                    excepted = 'Exception_InvalidRoomInfoFile'
-                    return excepted
-            except KeyboardInterrupt:
-                if (standbyMode != True):
-                    print "action canceled"
-                else:
-                    excepted = 'Command_CancelAction'
-                    return excepted
-                
+        if connectionResult != 0:
+            if (ignoreConnectionFault == False or standbyMode != True):
+                print "remote server could not be connected, script exited :("
+                connection.close()
                 sys.exit(0)
             else:
-                # import room information
+                print "remote server could not be connected, ignoring :("
+                connection.close()
+                excepted = "Exception_RemoteServerUnreachable"
+                return excepted
+        else:
 
-                if (os.path.isfile('./kitchens.json') == True):
+            # import login credits
+            if (os.path.isfile('./credits.json') == True):
 
-                    roomListFromFile = open(roomListFileName)
+                creditsFromFile = open(loginCreditsFileName)
 
-                    try:
-                        rooms = json.load(roomListFromFile)
-                    except ValueError:
-                        if (standbyMode != True):
-                            print "invalid login credits file format :("
-                            sys.exit(0)
-                        else:
-                            excepted = "Exception_InvalidLoginCreditsFileFormat"
-                            return excepted
-                    except KeyboardInterrupt:
-                        excepted = 'Command_CancelAction'
-                        return excepted
-                    else:
-                        # sort all kitchens by types
-
-                        kitchens = {
-                            'individual':[],
-                            'group':[],
-                            'multimedia':[]
-                        }
-
-                        for room in rooms:
-                            if (room['type'] == 'individual'):
-                                kitchens['individual'].append(room['roomId'])
-                            elif (room['type'] == 'group'):
-                                kitchens['group'].append(room['roomId'])
-                            else:
-                                kitchens['multimedia'].append(room['roomId'])
-
-                        # pair id-number for kitchens
-
-                        idToNumber = {}
-
-                        for room in rooms:
-                            idToNumber[room['roomId']] = room['roomNumber']
-
-                        # pair number-id for kitchens
-
-                        numberToId = {}
-
-                        for room in rooms:
-                            numberToId[room['roomNumber']] = room['roomId']
-
-                        return True
-
-                else:
+                try:
+                    loginCredits = json.load(creditsFromFile)
+                except ValueError:
                     if (standbyMode != True):
-                        print "invalid room information file :("
+                        print "wrong login credits file format, script exited :("
                         sys.exit(0)
                     else:
                         excepted = 'Exception_InvalidRoomInfoFile'
                         return excepted
+                except KeyboardInterrupt:
+                    if (standbyMode != True):
+                        print "action canceled"
+                    else:
+                        excepted = 'Command_CancelAction'
+                        return excepted
 
-        else:
-            if (standbyMode != True):
-                print "invalid login credits file :("
-                sys.exit(0)
+                    sys.exit(0)
+                else:
+                    # import room information
+
+                    if (os.path.isfile('./kitchens.json') == True):
+
+                        roomListFromFile = open(roomListFileName)
+
+                        try:
+                            rooms = json.load(roomListFromFile)
+                        except ValueError:
+                            if (standbyMode != True):
+                                print "invalid login credits file format :("
+                                sys.exit(0)
+                            else:
+                                excepted = "Exception_InvalidLoginCreditsFileFormat"
+                                return excepted
+                        except KeyboardInterrupt:
+                            excepted = 'Command_CancelAction'
+                            return excepted
+                        else:
+                            # sort all kitchens by types
+
+                            kitchens = {
+                                'individual':[],
+                                'group':[],
+                                'multimedia':[]
+                            }
+
+                            for room in rooms:
+                                if (room['type'] == 'individual'):
+                                    kitchens['individual'].append(room['roomId'])
+                                elif (room['type'] == 'group'):
+                                    kitchens['group'].append(room['roomId'])
+                                else:
+                                    kitchens['multimedia'].append(room['roomId'])
+
+                            # pair id-number for kitchens
+
+                            idToNumber = {}
+
+                            for room in rooms:
+                                idToNumber[room['roomId']] = room['roomNumber']
+
+                            # pair number-id for kitchens
+
+                            numberToId = {}
+
+                            for room in rooms:
+                                numberToId[room['roomNumber']] = room['roomId']
+
+                            return True
+
+                    else:
+                        if (standbyMode != True):
+                            print "invalid room information file :("
+                            sys.exit(0)
+                        else:
+                            excepted = 'Exception_InvalidRoomInfoFile'
+                            return excepted
+
             else:
-                excepted = 'Exception_InvalidLoginCreditsFile'
-                return excepted
+                if (standbyMode != True):
+                    print "invalid login credits file :("
+                    sys.exit(0)
+                else:
+                    excepted = 'Exception_InvalidLoginCreditsFile'
+                    return excepted
 
 if (standbyMode != True):
     init()
@@ -330,7 +335,7 @@ def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, end
             user = str(user)
             userList.append({"usercode":user})
         bookRoomUrl = socketUrl + "trainingroominfor/save"
-        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"", "email":"", "userpho":"0", "usemovepho":"1", "users":userList}
+        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"dinnerByTwikor", "email":"", "userpho":"0", "usemovepho":"1", "users":userList}
         body = json.dumps(body)
         headers = {"content-type": "application/json; charset=UTF-8"}
 

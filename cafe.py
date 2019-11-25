@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
 ## A simple but powerful application for automatic study-booking for the library of CDUT.
