@@ -228,38 +228,6 @@ The **cafe.py** will automatically absorb the configurations in **recipe.json**,
 
 All the essential process logs could be found in **beans.txt** for debugging purposes.
 
-Giving an example of the format of the pre-configuration file:
-
-```
-[
-    {
-        "roomId":125,
-        "users":[
-            "201906010101"
-        ],
-        "startAt": "2019-11-30 09:40:00",
-        "endAt": "2019-11-30 13:40:00",
-        "triggerAt": "2019-11-24 00:00:30"
-    },{
-        "roomId":125,
-        "users":[
-            "201906010101"
-        ],
-        "startAt": "2019-11-30 13:41:00",
-        "endAt": "2019-11-30 17:41:00",
-        "triggerAt": "2019-11-24 00:00:50"
-    },{
-        "roomId":125,
-        "users":[
-            "201906010101"
-        ],
-        "startAt": "2019-11-30 17:42:00",
-        "endAt": "2019-11-30 21:42:00",
-        "triggerAt": "2019-11-24 00:01:10"
-    }
-]
-```
-
 ## Contributions
 
 Notice: according to the license, you are required to make appropriate contributions to this project in case you run it. Check out [Toay's pre-mit license](https://toay.org/projects/pre-mit-license) for more information.
