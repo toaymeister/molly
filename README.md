@@ -10,7 +10,7 @@ This branch is for python *3.7+*, If you are seeking for previous support for py
 
 First, install all the dependencies that are required for this package.
 ```
-python -m pip install terminaltables beautifulsoup4
+python3 -m pip install terminaltables beautifulsoup4
 ```
 Then clone all the files to your computer(mostly a server for continuous support).
 
@@ -38,7 +38,7 @@ Create a file named **credits.json** besides dinner.py with your login credentia
 }
 ```
 
-### Dinner.py customizations
+### dinner.py customizations
 
 If you would like to use dinner directly in the terminal, simply navigate to the folder and import dinner, dinner.py will initialize itself automatically and then you are free to use all the methods.
 
@@ -46,7 +46,7 @@ Once the script is imported, it automatically detects the connection to the serv
 
 Otherwise, you may need to set `standbyMode` to `True` if you are using it in script or `cafe.py` for convenience.
 
-### Dinner.py api cheatsheet
+### dinner.py api cheatsheet
 
 #### init()
 
@@ -58,14 +58,17 @@ Initialize the library, including checking connection to the system, loading roo
 
 Notice that if `standbyMode` is set to `True`, the script will not exit just as `ignoreCoonectionFault = True` will do.
 
-|Return value|Type|Detail
+|Return value|Type|Detail|
 |-|-|-|
 |`True`|bool|\|
-|`'Except_RemoteServerUnreachable'`|str|automatic connection test failed|
-|`'Except_InvalidLoginCreditsFileFormat'`|str|\|
-|`'Except_InvalidLoginCreditsFile'`|str|file not exists or permission error|
-|`'Except_InvalidRoomInfoFileFormat'`|str|\|
-|`'Except_InvalidRoomInfoFile'`|str|file not exists or permission error|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`'Exception_RemoteServerUnreachable'`|str|automatic connection test failed|
+|`'Exception_LoginCreditsFileNotFound'`|str|file not exists|
+|`'Exception_LoginCreditsFilePermissionError'`|str|file permission error|
+|`'Exception_InvalidLoginCreditsFileFormat'`|str|file format error|
+|`'Exception_RoomListFileNotFound'`|str|file not exists|
+|`'Exception_RoomListFilePermissionError'`|str|file permission error|
+|`'Exception_InvalidRoomListFileFormat'`|str|file format error|
 
 #### getRoomNumberById(roomNumber)
 
@@ -73,7 +76,7 @@ Return the `roomNumber` for the specific room with the `roomId`.
 
 |Return value|Type|Detail|
 |-|-|-|
-|`roomNumber`|str|\|
+|`<roomNumber>`|str|\|
 
 #### getRoomIdByNumber(roomId)
 
@@ -81,7 +84,7 @@ Get the roomId for the specific room with the `roomNumber`.
 
 |Return value|Type|Detail|
 |-|-|-|
-|`roomId`|int|\|
+|`<roomId>`|int|\|
 
 #### getFreshCookie()
 
@@ -90,11 +93,12 @@ Login to the system using the credentials in credits.json file, and return the f
 |Return value|Type|Detail|
 |-|-|-|
 |`True`|bool|\|
-|`'Except_RemoteServerUnreachable'`|str|connection test failure|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`'Exception_RemoteServerUnreachable'`|str|connection test failure|
 
 #### getUserInfoByCode(code = None, pretiffied = False):
 
-Use the socket to filter fellow fellow companions. 
+Use the socket to filter fellow companions. 
 
 Accationally, you do not have to enter the full id number. For example:
 
@@ -107,6 +111,13 @@ To filter all the students in your class, use it like this `'2019060103'`. To fi
 
 Defaultly return the booking information for a given id of a room in json format. If setting parameter 2 to True, it will use terminaltables to render a prettier user interface right in your browser.
 
+|Return value|Type|Detail|
+|-|-|-|
+|`<userInfo>`|str|\|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`Exception_DataStreamBroken`|str|process interrupted when handling data, retrying may help mostly|
+
 #### getRoomBookingInfo(roomId, prettified = False)
 
 |Parameter|Type|Default|Example|Detail|
@@ -115,6 +126,13 @@ Defaultly return the booking information for a given id of a room in json format
 |`prettified`|bool|`False`|True|whether to use the data to render a user-friendly table in terminal|
 
 Defaultly return the booking information for a given id of a room in json format. If setting parameter 2 to True, it will use terminaltables to render a prettier user interface right in your browser.
+
+|Return value|Type|Detail|
+|-|-|-|
+|`<roomBookingInfo>`|str|\|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`Exception_DataStreamBroken`|str|process interrupted when handling data, retrying may help mostly|
 
 #### bookRoom(users, roomId, beginDay, beginTime, endDay, endTime)
 
@@ -135,7 +153,9 @@ bookRoom([201906010326,201906010328],97,"2019-10-13","17:02:00","2019-10-13","18
 |Return value|Type|Detail|
 |-|-|-|
 |`True`|bool|successfully booked the specified room|
-|`<Error message>`|str|details of the failure|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`<errorMessage>`|str|details of the failure|
 
 #### renewRoom()
 
@@ -144,7 +164,9 @@ Renew the room which is currently used for further 2 hours if not occupied by ot
 |Return value|Type|Detail|
 |-|-|-|
 |`True`|bool|successfully renewed the room which is currently using|
-|`<Error message>`|str|details of the failure|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`<errorMessage>`|str|details of the failure|
 
 #### cancelRoom(bookingId)
 
@@ -158,7 +180,9 @@ Return `True` if successful, or error message if failed.
 |Return value|Type|Detail|
 |-|-|-|
 |`True`|bool|successfully renewed the room which is currently using|
-|`<Error message>`|str|details of the failure|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`<errorMessage>`|str|details of the failure|
 
 #### getMyBookingInfo(prettified = False)
 
@@ -171,6 +195,13 @@ Set parameter `prettified` to `True` to use terminal-tables which makes it easie
 
 Notice that once you have signed up at the entrance of the study or the time(20 minutes) has passed without your signing-up, the entry will disappear from there. So you may have to use `getMyBookingHistory()` instead.
 
+|Return value|Type|Detail|
+|-|-|-|
+|`<myBookingInfo>`|str|\|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`Exception_DataStreamBroken`|str|process interrupted when handling data, retrying may help mostly|
+
 #### getMyBookingHistory()
 
 |Parameter|Type|Default|Example|Detail|
@@ -178,9 +209,16 @@ Notice that once you have signed up at the entrance of the study or the time(20 
 |`prettified`|bool|False|`True`|whether to use the data to render a user-friendly table in terminal|
 |`getEntriesNumber`|int|`10`|`35`|the number of history booking entries you want to obtain|
 
-### Cafe.py automatic booking configurations
+|Return value|Type|Detail|
+|-|-|-|
+|`<myBookingHistory>`|str|\|
+|`'Command_CancelAction'`|str|action canceled on keyboard interrupt|
+|`Exception_ConnectionTimeOut`|str|connection to remote server could not be established|
+|`Exception_DataStreamBroken`|str|process interrupted when handling data, retrying may help mostly|
 
-Creat a new file named **recipe.json**, where you are free to present your booking tasks to cafe.py like below:
+### cafe.py automatic booking configurations
+
+Creat a new file named **recipe.json**, where you are free to present your booking tasks to cafe.py like this below:
 
 ```
 [
@@ -214,7 +252,7 @@ Creat a new file named **recipe.json**, where you are free to present your booki
 |`endAt`|str|`'2019-11-03 13:40:00'`|`endDate+" "+endTime`|
 |`triggerAt`|str|`'2019-11-03 09:40:00'`|\|
 
-The default base configurations like debug mode, retry intervals are listed below, you are free to modify them in **cafe.py**.
+The default basic configurations like debug mode, retry intervals are listed below, you are free to modify them in **cafe.py** file.
 
 |Parameter|Type|Default|Detail|
 |-|-|-|-|
@@ -225,6 +263,8 @@ The default base configurations like debug mode, retry intervals are listed belo
 |`standbyInterval`|int|`1`|\|
 
 The **cafe.py** will automatically absorb the configurations in **recipe.json**, put them into job queue directory and remove the original file.
+
+Since v2.0, cafe.py has the ability to recover its task queue after restarting, which makes it more reliable to work on non-server machines.
 
 All the essential process logs could be found in **beans.txt** for debugging purposes.
 
@@ -240,6 +280,6 @@ You can make contributions to this project in the following ways.
 
 ## This and that
 
-Thisn project is maintained by twikor at **[Toay laboratory](https://toay.org)**, a place where we enjoy making creative things. We hope the ones who think of themselves useful to a newly-founded non-profit studio for creators, please don't hesitate joining us.
+Thisn project is maintained by twikor at **[Toay laboratory](https://toay.org)**, a place where we enjoy making creative things. We hope the ones who think of themselves useful to a newly-founded non-profit studio for creators not to hesitate joining us.
 
 For more information, please have a look at **[this](https://toay.org/about/signing-up)**.
