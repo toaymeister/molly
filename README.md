@@ -20,6 +20,7 @@ Then clone all the files to your computer(mostly a server for continuous support
 |-|-|
 |**dinner.py**|main library file that contains all the methods that you need to handle the boring works|
 |**cafe.py**|main application file that automatically book a study for you in case you asked him to in advance|
+|**porter.py**|application file that helps to generate booking configurations|
 |**kitchens.json**|the file containing all the information of the  studies in CDUT library|
 |**credits.json**|the file containing login information|
 |**recipe.json**|the configuration file for automatic study-booking application *cafe.py*|
@@ -138,7 +139,7 @@ Defaultly return the booking information for a given id of a room in json format
 
 |Parameter|Type|Default|Example|Detail|
 |-|-|-|-|-|
-|`users`|dic|`None`|`[201906010326,201606013028]`|users to share the room gathered in a dictionary|
+|`users`|dic[int]|`None`|`[201906010326,201606013028]`|users to share the room gathered in a dictionary|
 |`roomId`|int|`None`|`125`|could be obtained using `getRoomIdByNumber()`|
 |`beginDay`|str|None|`2019-11-02`|\|
 |`beginTime`|str|None|`08:00:00`|\|

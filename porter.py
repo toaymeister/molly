@@ -64,12 +64,16 @@ Operation: add configuration entry\n\
 
             print("[1/5]Input room id")
             roomId = input(" : ")
+            if (roomId != ""):
+                roomId = int(roomId)
 
             user = None
             userList = []
             print("[2/5]Input user ('' to finish, 'r' to refill)")
             while (user != ""):
                 user = input(" : ")
+                if (user != ""):
+                    user = int(user)
                 userList.append(user)
                 if (user == "r"):
                     userList = []
