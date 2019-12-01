@@ -56,7 +56,7 @@ Initialize the library, including checking connection to the system, loading roo
 |-|-|-|-|-|
 |`ignoreConnectionFault`|bool|False|True|wether exit on connection failure|
 
-Notice that if `standbyMode` is set to `True`, the script will not exit just as `ignoreCoonectionFault = True` will do.
+Notice that if `standbyMode` is set to `True`, the script will not exit just as `ignoreConectionFault = True` will do.
 
 |Return value|Type|Detail|
 |-|-|-|

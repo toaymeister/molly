@@ -20,11 +20,11 @@
 import os, sys, datetime, time, json
 import dinner as D
 
-# basic configurations
+# basic settings
 
 debugMode = True#set true to display runtime log
 
-recipeFileName = "recipe.json"
+recipeFile = "./recipe.json"
 shelfDirectory = "./shelf/"
 
 retryTimes = 5
@@ -68,14 +68,14 @@ def storeNewCups():
 
     # import pre-booking configurations
 
-    if (os.path.isfile('./recipe.json') == True):
+    if (os.path.isfile(recipeFile) == True):
 
         sweets = "INFO: task-importing operation started"
         sweetsOut(sweets)
         coffeeBeans = "INFO: task-importing operation started"
         beansOut(coffeeBeans)
 
-        recipeFromFile = open(recipeFileName)
+        recipeFromFile = open(recipeFile)
 
         # json file is easily wrong in format, so placed the exception handler
         try:
@@ -88,8 +88,8 @@ def storeNewCups():
         else:
             for toImportTaskIndex, toImportTask in enumerate(toImportTasks):
                 toImportTaskTriggerAt = toImportTask['triggerAt']
-                toImportTaskTriggerAtTimeArray = time.strptime(toImportTaskTriggerAt,"%Y-%m-%d %H:%M:%S")
-                toImportTaskId = time.strftime("%Y%m%d%H%M%S", toImportTaskTriggerAtTimeArray)
+                toImportTaskTriggerAtTimeStructure = time.strptime(toImportTaskTriggerAt,"%Y-%m-%d %H:%M:%S")
+                toImportTaskId = time.strftime("%Y%m%d%H%M%S", toImportTaskTriggerAtTimeStructure)
                 toImportTask['taskId'] = toImportTaskId
                 toImportTask['attemptedTimes'] = 0
 
@@ -110,11 +110,11 @@ def storeNewCups():
                 coffee = json.dumps(coffee, ensure_ascii = False)
 
                 coffeeFile = open(shelfDirectory + taskFileName, 'a')
-                contentLineToWrite = str(coffeeBeans)
+                contentLineToWrite = str(coffee)
                 coffeeFile.write(coffee)
                 coffeeFile.close()
 
-            os.system('rm ./recipe.json')
+            os.system('rm ' + recipeFile)
 
             sweets = "INFO: task imported successfully"
             sweetsOut(sweets)
@@ -137,7 +137,6 @@ def fetchStoredCoffee(coffeeId):
     storedCoffee = json.load(cooffeeFile)
 
     return storedCoffee
-
 
 # make preparations
 
@@ -169,8 +168,8 @@ try:
 
             for index, coffeeId in enumerate(coffees):
                 taskTriggerAt = coffeeId
-                taskTriggerAtTimeArray = time.strptime(taskTriggerAt, "%Y%m%d%H%M%S")
-                taskTriggerAtTimeStamp = time.mktime(taskTriggerAtTimeArray)
+                taskTriggerAtTimeStructure = time.strptime(taskTriggerAt, "%Y%m%d%H%M%S")
+                taskTriggerAtTimeStamp = time.mktime(taskTriggerAtTimeStructure)
 
                 if (int(currentTimestamp) - int(taskTriggerAtTimeStamp) < 0):
                     sweets = "INFO: task with id [" + str(coffeeId) + "] is currently waiting to be triggered"
@@ -180,8 +179,8 @@ try:
                     coffee = fetchStoredCoffee(coffeeId)
 
                     attemptedTimes = coffee['attemptedTimes']
-                    expectedTimeArray = time.strptime(coffee['triggerAt'], "%Y-%m-%d %H:%M:%S")
-                    expectedTimeStamp = int(time.mktime(expectedTimeArray))
+                    expectedTimeStructure = time.strptime(coffee['triggerAt'], "%Y-%m-%d %H:%M:%S")
+                    expectedTimeStamp = int(time.mktime(expectedTimeStructure))
                     currentTimeStamp = int(time.time())
                     users = coffee['users']
                     roomId = coffee['roomId']
