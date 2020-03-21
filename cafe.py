@@ -140,13 +140,8 @@ def fetchStoredCoffee(coffeeId):
 
 # make preparations
 
-currentDateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-currentDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-currentTime = time.strftime('%H:%M:%S',time.localtime(time.time()))
-currentTimestamp = int(time.time())
-
 if (os.path.isfile('./beans.txt') == False):
-    os.system('touch beans.txt')
+    os.system('touch ./beans.txt')
     
 if (os.path.exists(shelfDirectory) == False):
     os.system("mkdir " + shelfDirectory)
@@ -156,6 +151,13 @@ if (os.path.exists(shelfDirectory) == False):
 try:
 
     while(True):
+
+        # heartbeats
+
+        currentDateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        currentDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        currentTime = time.strftime('%H:%M:%S',time.localtime(time.time()))
+        currentTimestamp = int(time.time())
 
         # first, see whether there are tasks to do
 

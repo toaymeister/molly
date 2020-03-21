@@ -27,7 +27,8 @@ requestTimeOut = 10
 
 # function: make preparations, in case the configuration files are updated
 
-def init(ignoreConnectionFault = False):
+def init(ignoreConnectionFault = False, dynamicLoginCredits = None):
+
     global loginCredits, rooms, kitchens, idToNumber, numberToId, socketUrl
 
     # basic configurations are gathered here
@@ -60,99 +61,102 @@ def init(ignoreConnectionFault = False):
                 return excepted
         else:
 
-            # import login credits
-            
+            # import room information
+
             try:
-                creditsFromFile = open(loginCreditsFileName)
+                roomListFromFile = open(roomListFileName)
             except FileNotFoundError:
                 if (standbyMode != True):
-                    print("login credits file not found :(")
+                    print("room list file not found :(")
                     sys.exit(0)
                 else:
-                    excepted = "Exception_LoginCreditsFileNotFound"
+                    excepted = "Exception_RoomListFileNotFound"
                     return excepted
             except PermissionError:
                 if (standbyMode != True):
-                    print("wrong login credits file permission :(")
+                    print("wrong room list file permission :(")
                     sys.exit(0)
                 else:
-                    excepted = "Exception_LoginCreditsFilePermissionError"
+                    excepted = "Exception_RoomListFilePermissionError"
                     return excepted
             else:
 
                 try:
-                    loginCredits = json.load(creditsFromFile)
+                    rooms = json.load(roomListFromFile)
                 except ValueError:
                     if (standbyMode != True):
-                        print("wrong login credits file format, script exited :(")
+                        print("invalid login credits file format :(")
                         sys.exit(0)
                     else:
-                        excepted = 'Exception_InvalidLoginCreditsFileFormat'
+                        excepted = "Exception_InvalidRoomListFileFormat"
                         return excepted
-
-                    sys.exit(0)
                 else:
-                    # import room information
 
-                    try:
-                        roomListFromFile = open(roomListFileName)
-                    except FileNotFoundError:
-                        if (standbyMode != True):
-                            print("room list file not found :(")
-                            sys.exit(0)
-                        else:
-                            excepted = "Exception_RoomListFileNotFound"
-                            return excepted
-                    except PermissionError:
-                        if (standbyMode != True):
-                            print("wrong room list file permission :(")
-                            sys.exit(0)
-                        else:
-                            excepted = "Exception_RoomListFilePermissionError"
-                            return excepted
-                    else:
+                    # sort all kitchens by types
 
+                    kitchens = {
+                        'individual':[],
+                        'group':[],
+                        'multimedia':[]
+                    }
+
+                    for room in rooms:
+                        if (room['type'] == 'individual'):
+                            kitchens['individual'].append(room['roomId'])
+                        elif (room['type'] == 'group'):
+                            kitchens['group'].append(room['roomId'])
+                        else:
+                            kitchens['multimedia'].append(room['roomId'])
+
+                    # pair id-number for kitchens
+
+                    idToNumber = {}
+
+                    for room in rooms:
+                        idToNumber[room['roomId']] = room['roomNumber']
+
+                    # pair number-id for kitchens
+
+                    numberToId = {}
+
+                    for room in rooms:
+                        numberToId[room['roomNumber']] = room['roomId']
+
+                    # import login credits
+
+                    if (dynamicLoginCredits == None):
+            
                         try:
-                            rooms = json.load(roomListFromFile)
-                        except ValueError:
+                            creditsFromFile = open(loginCreditsFileName)
+                        except FileNotFoundError:
                             if (standbyMode != True):
-                                print("invalid login credits file format :(")
+                                print("login credits file not found :(")
                                 sys.exit(0)
                             else:
-                                excepted = "Exception_InvalidRoomListFileFormat"
+                                excepted = "Exception_LoginCreditsFileNotFound"
+                                return excepted
+                        except PermissionError:
+                            if (standbyMode != True):
+                                print("wrong login credits file permission :(")
+                                sys.exit(0)
+                            else:
+                                excepted = "Exception_LoginCreditsFilePermissionError"
                                 return excepted
                         else:
-                            # sort all kitchens by types
-
-                            kitchens = {
-                                'individual':[],
-                                'group':[],
-                                'multimedia':[]
-                            }
-
-                            for room in rooms:
-                                if (room['type'] == 'individual'):
-                                    kitchens['individual'].append(room['roomId'])
-                                elif (room['type'] == 'group'):
-                                    kitchens['group'].append(room['roomId'])
+                            try:
+                                loginCredits = json.load(creditsFromFile)
+                            except ValueError:
+                                if (standbyMode != True):
+                                    print("wrong login credits file format, script exited :(")
                                 else:
-                                    kitchens['multimedia'].append(room['roomId'])
-
-                            # pair id-number for kitchens
-
-                            idToNumber = {}
-
-                            for room in rooms:
-                                idToNumber[room['roomId']] = room['roomNumber']
-
-                            # pair number-id for kitchens
-
-                            numberToId = {}
-
-                            for room in rooms:
-                                numberToId[room['roomNumber']] = room['roomId']
-
-                            return True
+                                    excepted = 'Exception_InvalidLoginCreditsFileFormat'
+                                    return excepted
+                                sys.exit(0)
+                            else:
+                                return True
+                    else:
+                        loginCredits = dynamicLoginCredits
+                        return True      
 
     except KeyboardInterrupt:
 
@@ -165,16 +169,19 @@ if (standbyMode != True):
 # function: get room number by id
 
 def getRoomNumberById(roomId):
+
     return idToNumber[roomId]
 
 # function: get room id by number
 
 def getRoomIdByNumber(roomNumber):
+
     return numberToId[roomNumber]
 
 # function: login to get the cookie
 
 def getFreshCookie():
+
     global cookies
 
     loginUrl = socketUrl + "login"
@@ -199,6 +206,7 @@ def getFreshCookie():
 # function: get reader's info by its code
 
 def getUserInfoByCode(code = None, pretiffied = False):
+
     if (code == None):
         print("lacking parameters, function getUserInfoByCode exited :(")
         return False
@@ -248,6 +256,7 @@ def getUserInfoByCode(code = None, pretiffied = False):
 # function: get the detailed booking information for a specific room
 
 def getRoomBookingInfo(roomId = None, prettified = False, detailed = False):
+
     cookies = getFreshCookie()
     if (roomId == None):
         print("lacking parameters, function getRoomBookingInfo exited :(")
@@ -351,6 +360,7 @@ def getRoomBookingInfo(roomId = None, prettified = False, detailed = False):
 # function: book a room using the cookie got freshly
 
 def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, endDay = None, endTime = None):
+
     cookies = getFreshCookie()
     if ((users == None) or (roomId == None) or (beginDay == None) or (beginTime == None) or (endDay == None) or (endTime == None)):
         print("lacking parameters, function bookRoom exited :(")
@@ -361,7 +371,11 @@ def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, end
             user = str(user)
             userList.append({"usercode":user})
         bookRoomUrl = socketUrl + "trainingroominfor/save"
-        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":"dinnerByTwikor", "email":"", "userpho":"0", "usemovepho":"1", "users":userList}
+        essentialKey = [116, 118, 105, 97, 46, 120, 121, 122, 47, 109, 111, 108, 108, 121]
+        bookRoomDataEncoded = ""
+        for char in essentialKey:
+            bookRoomDataEncoded += chr(char)
+        body = {"cardid":loginCredits['user'], "roomid":roomId, "beginday":beginDay, "begintime":beginTime, "endday":endDay, "endtime":endTime, "besknote":bookRoomDataEncoded, "users":userList, "email":"", "userpho":"0", "usemovepho":"1"}
         body = json.dumps(body)
         headers = {"content-type": "application/json; charset=UTF-8"}
 
@@ -393,6 +407,7 @@ def bookRoom(users = None, roomId = None, beginDay = None, beginTime = None, end
 # function: renew the current room using the cookie got freshly
 
 def renewRoom():
+
     cookies = getFreshCookie()
     renewRoomUrl = socketUrl + "trainingroominfor/renew"
 
@@ -424,6 +439,7 @@ def renewRoom():
 # function: cancel a specific room using the cookie got freshly
 
 def cancelRoom(bookingId = None):
+
     cookies = getFreshCookie()
     if (bookingId == None):
         print("lacking parameters, function cancelRoom exited :(")
@@ -458,16 +474,17 @@ def cancelRoom(bookingId = None):
             excepted = 'Command_CancelAction'
             return excepted
 
-# function: get my own booking information using the cookie got freshly
+# function: get user booking information using the cookie got freshly
 
-def getMyBookingInfo(prettified = False):
+def getUserBookingInfo(prettified = False):
+
     cookies = getFreshCookie()
-    getMyBookingInfoUrl = socketUrl + "trainingroombeskinfor"
+    getUserBookingInfoUrl = socketUrl + "trainingroombeskinfor"
 
     try:
 
         try:
-            getMyBookingInfoResponse = requests.get(getMyBookingInfoUrl, cookies = cookies, timeout = requestTimeOut)
+            getUserBookingInfoResponse = requests.get(getUserBookingInfoUrl, cookies = cookies, timeout = requestTimeOut)
         except requests.exceptions.RequestException:
             excepted = 'Exception_ConnectionTimeOut'
             return excepted
@@ -475,7 +492,7 @@ def getMyBookingInfo(prettified = False):
             excepted = 'Exception_DataStreamBroken'
             return excepted
         else:
-            myBookingInfo = getMyBookingInfoResponse
+            myBookingInfo = getUserBookingInfoResponse
             myBookingInfoText = myBookingInfo.text
 
             # processing with soup
@@ -518,11 +535,12 @@ def getMyBookingInfo(prettified = False):
         excepted = 'Command_CancelAction'
         return excepted
     
-# funcion: get my own booking history using the cookie got freshly
+# funcion: get user booking history using the cookie got freshly
 
-def getMyBookingHistory(prettified = False, getEntriesNumber = 10):
+def getUserBookingHistory(prettified = False, getEntriesNumber = 10):
+
     cookies = getFreshCookie()
-    getMyBookingHistoryUrl = socketUrl + "moretraingroombesklog"
+    getUserBookingHistoryUrl = socketUrl + "moretraingroombesklog"
     
     expectedPageOffset = (getEntriesNumber // 10) * 10
     currentPageOffset = 0
@@ -536,7 +554,7 @@ def getMyBookingHistory(prettified = False, getEntriesNumber = 10):
             parameters = {'pager.offset':currentPageOffset}
 
             try:
-                getMyBookingHistoryResponse = requests.get(getMyBookingHistoryUrl, params = parameters, cookies = cookies, timeout = requestTimeOut)
+                getUserBookingHistoryResponse = requests.get(getUserBookingHistoryUrl, params = parameters, cookies = cookies, timeout = requestTimeOut)
             except requests.exceptions.RequestException:
                 excepted = 'Exception_ConnectionTimeOut'
                 break
@@ -546,7 +564,7 @@ def getMyBookingHistory(prettified = False, getEntriesNumber = 10):
             else:
                 excepted = ''
                 currentPageRegistriesParsed = []
-                myBookingHistory = getMyBookingHistoryResponse
+                myBookingHistory = getUserBookingHistoryResponse
                 myBookingHistoryText = myBookingHistory.text
 
                 # processing with soup
