@@ -43,7 +43,7 @@ def bindFailure(details = None):
 
 def sweetsOut(outputContent):
     if (debugMode == True):
-        print("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + outputContent)
+        print("[Molly " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + outputContent)
 
 # function: storing of the log data
 
@@ -56,7 +56,7 @@ def beansOut(coffeeBeans):
             os.system('touch beans.txt')
         
         coffeeBeansFile = open('beans.txt', 'a')
-        contentLineToWrite = str("[MoCafe " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + coffeeBeans + '\n')
+        contentLineToWrite = str("[Molly " + time.strftime('%m-%d %H:%M:%S',time.localtime(time.time())) + "] " + coffeeBeans + '\n')
         coffeeBeansFile.write(contentLineToWrite)
         coffeeBeansFile.close()
 

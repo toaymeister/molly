@@ -28,7 +28,7 @@ while (True):
 
     # basic settings
 
-    operationInitialDelay = 10
+    operationInitialDelay = 10#minimal intervals between two operations, same trigger date
     shelfDirectory = "./shelf/"
     creditsFile = "./credits.json"
     recipeFile = "./recipe.json"
@@ -47,7 +47,7 @@ Operation Menu:\n\
     4. port configurations to task queue\n\
     q. exit\n\
 ctrl + c to return to this menu\n\
-Force exit? try using duble ctrl + c twice\n\
+Force exit? try using ctrl + c twice\n\
 -----")
 
     try:
